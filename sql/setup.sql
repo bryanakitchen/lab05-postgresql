@@ -1,0 +1,6 @@
+CREATE TABLE artists (
+    id BIGINT GNERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name TEXT NOT NULL,
+    genre TEXT,
+
+);
