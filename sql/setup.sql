@@ -7,12 +7,19 @@ CREATE TABLE artists (
 CREATE TABLE dogs (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name TEXT NOT NULL,
-    age INT CHECK (age > 0),
+    age INTEGER CHECK (age > 0),
     owner_name TEXT
 )
 
 CREATE TABLE cities (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     city TEXT NOT NULL,
-    state TEXT NOT NULL,
+    state TEXT NOT NULL
+)
+
+CREATE TABLE foods (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dish TEXT NOT NULL,
+    country_of_origin TEXT NOT NULL,
+    spice_level BOOLEAN NOT NULL
 )
