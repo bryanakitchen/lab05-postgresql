@@ -21,5 +21,13 @@ CREATE TABLE foods (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     dish TEXT NOT NULL,
     country_of_origin TEXT NOT NULL,
-    spice_level BOOLEAN NOT NULL
+    spice_level INTEGER CHECK (spice_level < 11)
+)
+
+CREATE TABLE cars (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    make TEXT NOT NULL,
+    model TEXT NOT NULL,
+    year INTEGER NOT NULL
+
 )
