@@ -1,1 +1,1 @@
-# lab05-postgresql
+## Lab 05 - PostgreSQL
