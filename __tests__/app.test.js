@@ -1,140 +1,92 @@
-require('dotenv').config();
-
+const fs = require('fs');
 const app = require('../lib/app');
-const fakeRequest = require('supertest');
-// const artists = require('./data.js');
+const request = require('supertest');
+const pool = require('../lib/utils/pool');
+const Artist = require('../lib/models/Artist');
 
 describe('app routes for Artist model', () => {
     
-  it('Returns all artists', async () => {
-        
-    const expectation = [
-      {
-        id: 1,
-        artist: 'Griz',
-        genre: 'electronica',
-      },
-      {
-        id: 2,
-        artist: 'Above & Beyond',
-        genre: 'trance',
-      },
-      {
-        id: 3,
-        artist: 'Disclosure',
-        genre: 'house',
-      }
-    ];
-
-    const data = await fakeRequest(app)
-      .get('/artists')
-      .expect('Content-Type', /json/)
-      .expect(200);
-        
-    expect(data.body).toEqual(expectation);
+  beforeAll(() => {
+    return pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
   });
 
-  it('returns one artist', async () => {
-
-    const expectation = 
-        {
-          id: 1,
-          artist: 'Griz',
-          genre: 'electronica',
-        };
-  
-    const data = await fakeRequest(app)
-      .get('/artists/1')
-      .expect('Content-Type', /json/)
-      .expect(200);
-      
-    expect(data.body).toEqual(expectation);
+  afterAll(() => {
+    return pool.end();
   });
 
   it('adds one artist', async () => {
-
-    const expectation = 
-        {
-          id: 4,
-          artist: 'Big Gigantic',
-          genre: 'electronica',
-        };
-  
-    const data = await fakeRequest(app)
+                
+    const data = await request(app)
       .post('/artists')
       .send({
-        id: 4,
         artist: 'Big Gigantic',
         genre: 'electronica',
-      })
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    const allArtists = await fakeRequest(app)
-      .get('/artists')
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-      
-    expect(data.body).toEqual(expectation);
-    expect(allArtists.body.length).toEqual(4);
+      });
+                    
+    expect(data.body).toEqual({
+      id: '1',
+      artist: 'Big Gigantic',
+      genre: 'electronica',
+    });
+  });
+    
+  it('Returns all artists', async () => {
+        
+    const data = await request(app)
+      .get('/artists');
+        
+    expect(data.body).toEqual([{
+      id: '1',
+      artist: 'Big Gigantic',
+      genre: 'electronica',
+    }]);
   });
 
+  it('returns one artist', async () => {
+  
+    const data = await request(app)
+      .get('/artists/1');
+      
+    expect(data.body).toEqual({
+      id: '1',
+      artist: 'Big Gigantic',
+      genre: 'electronica',
+
+    });
+  });
+
+
   it('updates one artist', async() => {
+    const artist = await Artist.insert({ artist: 'Griz', genre: 'funk' });
 
-    const expectation =
-      {
-        id: 1,
-        name: 'Griz',
-        genre: 'funk',
-      };
-
-    const data = await fakeRequest(app)
-      .put('/artists/1')
+    const data = await request(app)
+      .put(`/artists/${artist.id}`)
       .send({
-        name: 'Griz',
+        artist: 'Griz',
         genre: 'funk',
-        id: 1
-      })
-      .expect('Content-Type', /json/)
-      .expect(200);
+      });
 
-    const allArtists = await fakeRequest(app)
-      .get('/artists')
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(data.body).toEqual(expectation);
-    expect(allArtists.body.length).toEqual(4);
+    expect(data.body).toEqual({
+      ...artist,
+      artist: 'Griz',
+      genre: 'funk',
+    });
   });
   
   it('deletes one artist', async() => {
 
-    const expectation =
-      {
-        id: 4,
-        artist: 'Big Gigantic',
-        genre: 'electronica',
-      };
-
-    const data = await fakeRequest(app)
-      .put('/artists/4')
+    const data = await request(app)
+      .put('/artists/1')
       .send({
-        artist: 'Big Gigantic',
-        genre: 'electronica',
-        id: 4
-      })
-      .expect('Content-Type', /json/)
-      .expect(200);
+        artist: 'Griz',
+        genre: 'funk',
+      });
 
-    const allArtists = await fakeRequest(app)
-      .get('/artists')
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(data.body).toEqual(expectation);
-    expect(allArtists.body.length).toEqual(3);
+    expect(data.body).toEqual({
+      id: '1',
+      artist: 'Griz',
+      genre: 'funk',
+    });
   });
-  
 
 });
