@@ -51,7 +51,6 @@ describe('app routes for Artist model', () => {
       id: '1',
       artist: 'Big Gigantic',
       genre: 'electronica',
-
     });
   });
 
@@ -76,16 +75,16 @@ describe('app routes for Artist model', () => {
   it('deletes one artist', async() => {
 
     const data = await request(app)
-      .put('/artists/1')
+      .delete('/artists/1')
       .send({
-        artist: 'Griz',
-        genre: 'funk',
+        artist: 'Big Gigantic',
+        genre: 'electronica'
       });
 
     expect(data.body).toEqual({
       id: '1',
-      artist: 'Griz',
-      genre: 'funk',
+      artist: 'Big Gigantic',
+      genre: 'electronica'
     });
   });
 
